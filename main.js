@@ -460,10 +460,8 @@ function editmenu() {
 }
 
 function editmenufin(key, type ,field) {
-  console.log("editmenufin", key, type, field);
   const element = document.getElementById(`${key}-${type}-${field}`);
   const newValue = field === "status" ? element.checked : element.value
-  console.log(newValue);
   const updates = {};
   updates[`people/data/${number}/menu/cafe/drinks/${key}/${field}`] = newValue;
 
