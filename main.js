@@ -441,7 +441,12 @@ function editmenu() {
             <td><img src="${key.image}?w=400&h=300&fm=webp&q=75&auto=compress,format" class="menupan-img"></td>
             <td><input class="form-input" type="text" id="${index}-drink-name" value="${key.name}" onchange="editmenufin('${index}', 'drink' ,'name')"></td>
             <td><input class="form-input" type="text" id="${index}-drink-price" value="${key.price}" onchange="editmenufin('${index}', 'drink' ,'price')"></td>
-            <td><button class="btn" onclick="deleteMenuItem('${key}')">삭제</button></td>
+            <td><div class="form-group">
+         <label class="form-switch">
+          <input type="checkbox" id="${index}-drink-status" onchange="editmenufin('${index}', 'drink' ,'status')">
+          <i class="form-icon"></i> 상태
+        </label>
+         </div></td>
           `;
 
           tbody.appendChild(row);
@@ -456,7 +461,9 @@ function editmenu() {
 
 function editmenufin(key, type ,field) {
   console.log("editmenufin", key, type, field);
-  const newValue = document.getElementById(`${key}-${type}-${field}`).value;
+  const element = document.getElementById(`${key}-${type}-${field}`);
+  const newValue = field === "status" ? element.checked : element.value
+  console.log(newValue);
   const updates = {};
   updates[`people/data/${number}/menu/cafe/drinks/${key}/${field}`] = newValue;
 
