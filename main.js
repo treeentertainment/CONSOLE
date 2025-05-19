@@ -439,18 +439,37 @@ function editmenu() {
 
           row.innerHTML = `
             <td><img src="${key.image}?w=400&h=300&fm=webp&q=75&auto=compress,format" class="menupan-img"></td>
-            <td><input class="form-input" type="text" id="${index}-drink-name" value="${key.name}" onchange="editmenufin('${index}', 'drink' ,'name')"></td>
-            <td><input class="form-input" type="text" id="${index}-drink-price" value="${key.price}" onchange="editmenufin('${index}', 'drink' ,'price')"></td>
+            <td><input class="form-input" type="text" id="${index}-drinks-name" value="${key.name}" onchange="editmenufin('${index}', 'drinks' ,'name')"></td>
+            <td><input class="form-input" type="text" id="${index}-drinks-price" value="${key.price}" onchange="editmenufin('${index}', 'drinks' ,'price')"></td>
             <td><div class="form-group">
          <label class="form-switch">
-          <input type="checkbox" id="${index}-drink-status" onchange="editmenufin('${index}', 'drink' ,'status')">
-          <i class="form-icon"></i> 상태
+          <input type="checkbox" id="${index}-drinks-status" onchange="editmenufin('${index}', 'drinks' ,'status')" ` + (key.status ? 'checked' : '') + `>
+          <i class="form-icon"></i>
         </label>
          </div></td>
           `;
 
           tbody.appendChild(row);
         });
+
+          data.cafe.foods.forEach((key, index) => {
+          const row = document.createElement('tr');
+
+          row.innerHTML = `
+            <td><img src="${key.image}?w=400&h=300&fm=webp&q=75&auto=compress,format" class="menupan-img"></td>
+            <td><input class="form-input" type="text" id="${index}-foods-name" value="${key.name}" onchange="editmenufin('${index}', 'foods' ,'name')"></td>
+            <td><input class="form-input" type="text" id="${index}-foods-price" value="${key.price}" onchange="editmenufin('${index}', 'foods' ,'price')"></td>
+            <td><div class="form-group">
+         <label class="form-switch">
+          <input type="checkbox" id="${index}-foods-status" onchange="editmenufin('${index}', 'foods' ,'status')" ` + (key.status ? 'checked' : '') + `>
+          <i class="form-icon"></i>
+        </label>
+         </div></td>
+          `;
+
+          tbody.appendChild(row);
+        });
+
 
         menupan.appendChild(tbody);
       });
@@ -463,7 +482,7 @@ function editmenufin(key, type ,field) {
   const element = document.getElementById(`${key}-${type}-${field}`);
   const newValue = field === "status" ? element.checked : element.value
   const updates = {};
-  updates[`people/data/${number}/menu/cafe/drinks/${key}/${field}`] = newValue;
+  updates[`people/data/${number}/menu/cafe/${type}/${key}/${field}`] = newValue;
 
   firebase.database().ref().update(updates)
     .then(() => {
