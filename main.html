@@ -89,17 +89,11 @@
               <th style="width: 200px;">이미지</th>
               <th>이름</th>
               <th>가격</th>
+              <th>최대 주문수</th>
               <th>상태</th>
             </tr>
           </thead>
           <tbody>
-            <tr class="active">
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-
-            </tr>
           </tbody>
         </table>
         </div>
@@ -107,7 +101,43 @@
           
         </div>
         <div class="page" id="setting-edit">
-          </div>
+          <div class="form-group">
+          <label class="form-radio form-inline">
+            <input type="radio" name="run" value="0" checked><i class="form-icon"></i> 운영
+          </label>
+          <label class="form-radio form-inline">
+            <input type="radio" name="warn" value="1"><i class="form-icon"></i> 경고
+          </label>
+          <label class="form-radio form-inline">
+            <input type="radio" name="stop" value="2"><i class="form-icon"></i> 정지
+          </label>
+        </div>
+      <!-- form textarea control -->
+        <div class="form-group">
+          <label class="form-label" for="input-example-3">메시지</label>
+          <textarea class="form-input" id="editstatetxt" placeholder="Textarea" rows="3" onchange="editstate();"></textarea>
+        </div>
+
+
+        <div class="modal" id="alertbox">
+            <a href="#close" class="modal-overlay" aria-label="Close" onclick="closeModal();"></a>
+            <div class="modal-container">
+              <div class="modal-header">
+                <a href="#close" class="btn btn-clear float-right" aria-label="Close" onclick="closeModal();"></a>
+                <div class="modal-title h5" id="modal-title">매뉴 수정</div>
+              </div>
+              <div class="modal-body">
+                <div class="content"  id="modal-content">
+                  <!-- content here -->
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button class="btn btn-primary" id="okmodal" onclick="closeAlert()">확인 & 적용</button>             
+                <button class="btn" onclick="closeAlert()" id="cancelmodal">취소</button>
+              </div>
+            </div>
+          </div>   
+       </div>
     </div>
     <script src="https://www.gstatic.com/firebasejs/11.4.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/11.4.0/firebase-auth-compat.js"></script>

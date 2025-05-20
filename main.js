@@ -423,53 +423,49 @@ function editmenu() {
         const data = snapshot.val();
         console.log(data);
 
-        const menupan = document.getElementById('menupan'); 
+        const menupan = document.getElementById('menupan');
 
-        // 기존 tbody 제거 (있다면)
+        // 기존 tbody 제거
         const oldTbody = menupan.querySelector('tbody');
-        if (oldTbody) {
-          menupan.removeChild(oldTbody);
-        }
+        if (oldTbody) menupan.removeChild(oldTbody);
 
-        // 새 tbody 생성
         const tbody = document.createElement('tbody');
 
-        data.cafe.drinks.forEach((key, index) => {
-          const row = document.createElement('tr');
+        // 유틸: 항목 렌더링
+        const renderItems = (items, category) => {
+          items.forEach((item, index) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td><img src="${item.image}?w=400&h=300&fm=webp&q=75&auto=compress,format" class="menupan-img"></td>
+              <td><input class="form-input" type="text" id="${index}-${category}-name" value="${item.name}" onchange="editmenufin('${index}', '${category}', 'name')"></td>
+              <td><input class="form-input" type="text" id="${index}-${category}-price" value="${item.price}" onchange="editmenufin('${index}', '${category}', 'price')"></td>
+              <td><input class="form-input" type="text" id="${index}-${category}-max" value="${item.max}" onchange="editmenufin('${index}', '${category}', 'max')"></td>
+              <td>
+                <label class="form-switch">
+                  <input type="checkbox" id="${index}-${category}-status" onchange="editmenufin('${index}', '${category}', 'status')" ${item.status ? 'checked' : ''}>
+                  <i class="form-icon"></i>
+                </label>
+              </td>
+            `;
+            tbody.appendChild(row);
+          });
+        };
 
-          row.innerHTML = `
-            <td><img src="${key.image}?w=400&h=300&fm=webp&q=75&auto=compress,format" class="menupan-img"></td>
-            <td><input class="form-input" type="text" id="${index}-drinks-name" value="${key.name}" onchange="editmenufin('${index}', 'drinks' ,'name')"></td>
-            <td><input class="form-input" type="text" id="${index}-drinks-price" value="${key.price}" onchange="editmenufin('${index}', 'drinks' ,'price')"></td>
-            <td><div class="form-group">
-         <label class="form-switch">
-          <input type="checkbox" id="${index}-drinks-status" onchange="editmenufin('${index}', 'drinks' ,'status')" ` + (key.status ? 'checked' : '') + `>
-          <i class="form-icon"></i>
-        </label>
-         </div></td>
-          `;
+        // cafe 내부 카테고리 처리
+        if (data.cafe) {
+          for (const [category, items] of Object.entries(data.cafe)) {
+            if (Array.isArray(items)) {
+              renderItems(items, category);
+            }
+          }
+        }
 
-          tbody.appendChild(row);
-        });
-
-          data.cafe.foods.forEach((key, index) => {
-          const row = document.createElement('tr');
-
-          row.innerHTML = `
-            <td><img src="${key.image}?w=400&h=300&fm=webp&q=75&auto=compress,format" class="menupan-img"></td>
-            <td><input class="form-input" type="text" id="${index}-foods-name" value="${key.name}" onchange="editmenufin('${index}', 'foods' ,'name')"></td>
-            <td><input class="form-input" type="text" id="${index}-foods-price" value="${key.price}" onchange="editmenufin('${index}', 'foods' ,'price')"></td>
-            <td><div class="form-group">
-         <label class="form-switch">
-          <input type="checkbox" id="${index}-foods-status" onchange="editmenufin('${index}', 'foods' ,'status')" ` + (key.status ? 'checked' : '') + `>
-          <i class="form-icon"></i>
-        </label>
-         </div></td>
-          `;
-
-          tbody.appendChild(row);
-        });
-
+        // cafe 외 다른 최상위 카테고리 처리 (예: services)
+        for (const [category, items] of Object.entries(data)) {
+          if (category !== 'cafe' && Array.isArray(items)) {
+            renderItems(items, category);
+          }
+        }
 
         menupan.appendChild(tbody);
       });
@@ -492,3 +488,61 @@ function editmenufin(key, type ,field) {
       console.error("Error updating menu item:", error);
     });
 }
+
+function editstate() {
+ var text = document.getElementById('editstatetxt').value;
+ var updates = {};
+  updates[`people/data/${number}/state/reason`] = text;
+  updates[`people/data/${number}/state/img`] = "null";
+  updates[`people/data/${number}/state`] = true;
+}
+
+  const group = document.getElementById('setting-edit');
+  const radios = group.querySelectorAll('input[type="radio"]');
+
+  radios.forEach(radio => {
+    radio.addEventListener('change', (event) => {
+      if (event.target.checked) {
+        radios.forEach(other => {
+          if (other !== event.target) {
+            other.checked = false;
+          }
+        });
+        console.log("선택된 값:", event.target.value);
+        const updates = {};
+        updates[`people/data/${number}/state`] = Number(event.target.value);
+        firebase.database().ref().update(updates)
+          .then(() => {
+            alertbox(`상태가 ${event.target.name}로 변경되었습니다.`, true, false);
+          })
+          .catch((error) => {
+            alertbox(`오류 발생, 관리자에게 다음 메시지를 전달해주십시오: ${error}`, true, false);  
+          });
+      }
+    });
+  });
+
+  function alertbox(text, ok, cancel) {
+    const alertbox = document.getElementById('modal-content');
+    alertbox.innerHTML = text;
+
+    if (ok) {
+      document.getElementById("cancelmodal").style.display = "none";
+      document.getElementById("okmodal").style.display = "block";
+    }
+    if (cancel) {
+      document.getElementById("okmodal").style.display = "none";
+      document.getElementById("cancelmodal").style.display = "block";
+    }
+
+      document.getElementById('alertbox').classList.add('active');
+  }
+
+  function closeAlert() {
+    const alertbox = document.getElementById('alertbox');
+    alertbox.classList.remove('active');
+    document.getElementById('modal-content').innerHTML = "";
+  }
+
+
+  
