@@ -492,9 +492,15 @@ function editmenufin(key, type ,field) {
 function editstate() {
  var text = document.getElementById('editstatetxt').value;
  var updates = {};
-  updates[`people/data/${number}/state/reason`] = text;
-  updates[`people/data/${number}/state/img`] = "null";
-  updates[`people/data/${number}/state`] = true;
+  updates[`people/data/${number}/state/reason/message`] = text;
+  updates[`people/data/${number}/state/reason/img`] = "null";
+  firebase.database().ref().update(updates)
+    .then(() => {
+      alertbox(`상태가 ${text}로 변경되었습니다.`, true, false);
+    })
+    .catch((error) => {
+      alertbox(`오류 발생, 관리자에게 다음 메시지를 전달해주십시오: ${error}`, true, false);  
+    });
 }
 
   const group = document.getElementById('setting-edit');
@@ -510,7 +516,7 @@ function editstate() {
         });
         console.log("선택된 값:", event.target.value);
         const updates = {};
-        updates[`people/data/${number}/state`] = Number(event.target.value);
+        updates[`people/data/${number}/state/state`] = Number(event.target.value);
         firebase.database().ref().update(updates)
           .then(() => {
             alertbox(`상태가 ${event.target.name}로 변경되었습니다.`, true, false);
@@ -544,5 +550,11 @@ function editstate() {
     document.getElementById('modal-content').innerHTML = "";
   }
 
-
-  
+    firebase.database().ref('/people/data/' + number + '/state').once('value').then((snapshot) => {
+     if(snapshot.val() && snapshot.val().state) {
+        document.getElementById('editstatetxt').value = snapshot.val().reason.message;
+         radios[Number(snapshot.val().state)].checked = true;      
+      }
+      }).catch((error) => {
+      console.error("Error fetching state data:", error);
+    });
