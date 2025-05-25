@@ -431,41 +431,44 @@ function editmenu() {
 
         const tbody = document.createElement('tbody');
 
-        // 유틸: 항목 렌더링
-        const renderItems = (items, category) => {
+        const renderItems = (items, type, category) => {
           items.forEach((item, index) => {
             const row = document.createElement('tr');
             row.innerHTML = `
               <td><img src="${item.image}?w=400&h=300&fm=webp&q=75&auto=compress,format" class="menupan-img"></td>
-              <td><input class="form-input" type="text" id="${index}-${category}-name" value="${item.name}" onchange="editmenufin('${index}', '${category}', 'name')"></td>
-              <td><input class="form-input" type="text" id="${index}-${category}-price" value="${item.price}" onchange="editmenufin('${index}', '${category}', 'price')"></td>
-              <td><input class="form-input" type="text" id="${index}-${category}-max" value="${item.max}" onchange="editmenufin('${index}', '${category}', 'max')"></td>
+              <td><input class="form-input" type="text" id="${index}-${type}-name" value="${item.name}" onchange="editmenufin('${index}', '${type}', 'name', '${category}')"></td>
+              <td><input class="form-input" type="text" id="${index}-${type}-price" value="${item.price}" onchange="editmenufin('${index}', '${type}', 'price', '${category}')"></td>
+              <td><input class="form-input" type="text" id="${index}-${type}-max" value="${item.max}" onchange="editmenufin('${index}', '${type}', 'max', '${category}')"></td>
               <td>
                 <label class="form-switch">
-                  <input type="checkbox" id="${index}-${category}-status" onchange="editmenufin('${index}', '${category}', 'status')" ${item.status ? 'checked' : ''}>
+                  <input type="checkbox" id="${index}-${type}-status" onchange="editmenufin('${index}', '${type}', 'status', '${category}')" ${item.status ? 'checked' : ''}>
                   <i class="form-icon"></i>
                 </label>
+              </td>
+              <td>
+                <button class="material-icons btn btn-error" onclick="deletecheck('${item.name}', '${category}', '${type}', '${index}')">delete</button>
               </td>
             `;
             tbody.appendChild(row);
           });
         };
 
+
         // cafe 내부 카테고리 처리
         if (data.cafe) {
-          for (const [category, items] of Object.entries(data.cafe)) {
+          for (const [type, items] of Object.entries(data.cafe)) {
             if (Array.isArray(items)) {
-              renderItems(items, category);
+              renderItems(items, type, 'cafe');
             }
           }
         }
 
-        // cafe 외 다른 최상위 카테고리 처리 (예: services)
         for (const [category, items] of Object.entries(data)) {
           if (category !== 'cafe' && Array.isArray(items)) {
-            renderItems(items, category);
+            renderItems(items, category, category); // category가 그대로 type
           }
         }
+
 
         menupan.appendChild(tbody);
       });
@@ -474,11 +477,30 @@ function editmenu() {
   }
 }
 
-function editmenufin(key, type ,field) {
+function deletecheck(name, category, type, index) {
+  console.log("Delete check called for:", name, category, type, index);
+  const alertbox = document.getElementById('applymodal-content');
+  alertbox.innerHTML = `${name}을 삭제 하시겠습니까?`;
+  document.getElementById('applymodals').classList.add('active');
+
+  document.getElementById("applymodal").addEventListener("click", function handler() {
+    firebase.database().ref(`people/data/${number}/menu/${category}/${type}/${index}/`).remove()
+      .then(() => {
+        document.getElementById('applymodals').classList.remove('active');
+      })
+      .catch((error) => {
+        console.error("Error deleting menu item:", error);
+        alertbox.innerHTML = `오류 발생, 관리자에게 다음 메시지를 전달해주십시오: ${error}`;
+      });
+  }, { once: true });
+}
+
+
+function editmenufin(key, type, field, category) {
   const element = document.getElementById(`${key}-${type}-${field}`);
-  const newValue = field === "status" ? element.checked : element.value
+  const newValue = field === "status" ? element.checked : element.value;
   const updates = {};
-  updates[`people/data/${number}/menu/cafe/${type}/${key}/${field}`] = newValue;
+  updates[`people/data/${number}/menu/${category}/${type}/${key}/${field}`] = newValue;
 
   firebase.database().ref().update(updates)
     .then(() => {
@@ -489,14 +511,20 @@ function editmenufin(key, type ,field) {
     });
 }
 
-function editstate() {
+function editstate(event) {
+  const value = document.getElementById('editimg').value;
+
+   if (value && !isValidURL(value)) {
+    alertbox("이미지 주소가 유효하지 않습니다.", true, false);
+    return;
+  }
  var text = document.getElementById('editstatetxt').value;
  var updates = {};
   updates[`people/data/${number}/state/reason/message`] = text;
-  updates[`people/data/${number}/state/reason/img`] = "null";
+  updates[`people/data/${number}/state/reason/img`] = document.getElementById('editimg').value;
   firebase.database().ref().update(updates)
     .then(() => {
-      alertbox(`상태가 ${text}로 변경되었습니다.`, true, false);
+      alertbox(`상태 변경이 완료되었습니다.`, true, false);
     })
     .catch((error) => {
       alertbox(`오류 발생, 관리자에게 다음 메시지를 전달해주십시오: ${error}`, true, false);  
@@ -514,12 +542,11 @@ function editstate() {
             other.checked = false;
           }
         });
-        console.log("선택된 값:", event.target.value);
         const updates = {};
         updates[`people/data/${number}/state/state`] = Number(event.target.value);
         firebase.database().ref().update(updates)
           .then(() => {
-            alertbox(`상태가 ${event.target.name}로 변경되었습니다.`, true, false);
+            alertbox(`상태가 ${event.target.closest('label')?.textContent.trim()}로 변경되었습니다.`, true, false);
           })
           .catch((error) => {
             alertbox(`오류 발생, 관리자에게 다음 메시지를 전달해주십시오: ${error}`, true, false);  
@@ -551,10 +578,20 @@ function editstate() {
   }
 
     firebase.database().ref('/people/data/' + number + '/state').once('value').then((snapshot) => {
-     if(snapshot.val() && snapshot.val().state) {
+     if(snapshot.val()) {
         document.getElementById('editstatetxt').value = snapshot.val().reason.message;
-         radios[Number(snapshot.val().state)].checked = true;      
+        document.getElementById('editimg').value = snapshot.val().reason.img;
+        radios[Number(snapshot.val().state)].checked = true;      
       }
       }).catch((error) => {
       console.error("Error fetching state data:", error);
     });
+
+function isValidURL(string) {
+  try {
+    new URL(string);
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
