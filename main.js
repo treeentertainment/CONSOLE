@@ -62,7 +62,7 @@ auth.onAuthStateChanged((user) => {
   }
 });
 
-function editmenu(templist, key) {
+function edit(templist, key) {
   const editor = document.getElementById('menu-editor');
   editor.innerHTML = "";
 
@@ -271,7 +271,7 @@ function neworder(key, orderData) {
   menubutton.classList.add('material-icons', 'btn', 'btn-error');
   menubutton.textContent = "edit";
   menubutton.style.marginRight = "5px";
-  menubutton.onclick = () => editmenu(templist, key);
+  menubutton.onclick = () => edit(templist, key);
   editor.appendChild(menubutton);
 
   const callbutton = document.createElement('button');
