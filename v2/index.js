@@ -1,127 +1,107 @@
-const firebaseConfig = {
-  apiKey: "AIzaSyDJRpL1f7zssYZ5495icYrjga_U4jAoLAE",
-  authDomain: "treeentertainment.web.app",
-  databaseURL: "https://treeentertainment-default-rtdb.firebaseio.com",
-  projectId: "treeentertainment",
-  storageBucket: "treeentertainment.firebasestorage.app",
-  messagingSenderId: "302800551840",
-  appId: "1:302800551840:web:77c5d1af87e43cb3c3eec5",
-};
-
-const app = firebase.initializeApp(firebaseConfig);
-const database = firebase.database();
-const auth = firebase.auth();
-
 document
   .getElementById("googleLoginBtn")
   .addEventListener("click", googleLogin);
 
-function googleLogin() {
-  var provider = new firebase.auth.GoogleAuthProvider();
-  provider.addScope("openid", "email", "profile");
-  firebase.auth().useDeviceLanguage();
-
-  firebase
-    .auth()
-    .signInWithPopup(provider)
-    .then((result) => {
-      handleResult(result.user);
-    })
-    .catch((error) => {});
+async function googleLogin() {
+  const { error } = await supabaseClient.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: `${window.location.origin}/v2/index.html`,
+    },
+  });
+  if (error) {
+    console.error("Error logging in with Google:", error);
+  }
 }
 
 const form = document.getElementById("loginForm");
 form.addEventListener("submit", loginpassword);
 
-function loginpassword(event) {
+async function loginpassword(event) {
   event.preventDefault();
   const email = event.srcElement[0].value;
   const password = event.srcElement[1].value;
 
-  firebase
-    .auth()
-    .signInWithEmailAndPassword(email, password)
-    .then((result) => {
-      handleResult(result.user);
-    })
-    .catch((error) => {
-      alert("Error: " + error.message);
-      show("login", "start");
-    });
+  const { data, error } = await supabaseClient.auth.signInWithPassword({
+    email,
+    password,
+  });
 
-  return null;
+  if (error) {
+    alert("Error: " + error.message);
+    show("login", "start");
+    return;
+  }
 }
 
-function logout() {
-  firebase
-    .auth()
-    .signOut()
-    .then(() => {
-      show("login", "start");
-    })
-    .catch((error) => {});
+async function logout() {
+  const { error } = await supabaseClient.auth.signOut();
+  if (error) {
+    console.error("Error signing out:", error);
+    return;
+  }
+  show("login", "start");
 }
 
 // Monitor auth state
-firebase.auth().onAuthStateChanged((user) => {
-  if (user) {
-    handleResult(user);
-  } else {
+supabaseClient.auth.onAuthStateChange((event, session) => {
+  if (event === "SIGNED_IN" && session && session.user) {
+    handleResult(session.user);
+  } else if (event === "SIGNED_OUT") {
     show("login", "start");
   }
 });
 
-function handleResult(user) {
+async function handleResult(user) {
   const email = user.email;
-  const fixedemail = email.replace(/\./g, "@");
-  window.localStorage.setItem("email", JSON.stringify(fixedemail));
+  window.localStorage.setItem("email", JSON.stringify(email));
 
-  firebase
-    .database()
-    .ref("/people/admin/" + fixedemail)
-    .once("value")
-    .then((snapshot) => {
-      const data = snapshot.val();
-      if (data && data.enabled === true) {
-        window.localStorage.setItem("number", JSON.stringify(data.store));
-        firebase
-          .database()
-          .ref("/people/data/" + data.store)
-          .once("value")
-          .then((snapshot) => {
-            const data = snapshot.val();
-            if (data && data.email === fixedemail) {
-              window.localStorage.setItem("name", JSON.stringify(data.name));
-              show("start", "login");
-            } else {
-              alert(
-                "올바른 데이터가 아니거나 관리자가 아닙니다. 잠시후 로그아웃 됩니다.",
-              );
-              firebase.auth().signOut();
-              show("login", "start");
-            }
-          })
-          .catch((error) => {
-            var errorCode = error.code;
-            var errorMessage = error.message;
-            firebase.auth().signOut();
-            alert(`에러 코드: ${errorCode} 에러 메시지: ${errorMessage}`);
-            show("login", "start");
-          });
-      } else {
-        alert("관리자가 아닙니다. 잠시후 로그아웃 됩니다.");
-        firebase.auth().signOut();
-        show("login", "start");
-      }
-    })
-    .catch((error) => {
-      var errorCode = error.code;
-      var errorMessage = error.message;
-      firebase.auth().signOut();
+  try {
+    // 1. 'admins' 테이블에서 사용자 정보 조회
+    const { data: adminData, error: adminError } = await supabaseClient
+      .from("admins")
+      .select("store, access")
+      .eq("user_id", user.id)
+      .single();
 
-      alert(`에러 코드: ${errorCode} 에러 메시지: ${errorMessage}`);
+    if (adminError || !adminData) {
+      alert("관리자 정보를 찾을 수 없습니다. 잠시후 로그아웃 됩니다.");
+      await supabaseClient.auth.signOut();
       show("login", "start");
-    });
+      return;
+    }
+
+    // 2. 'stores' 테이블에서 매장 정보 조회
+    const { data: storeData, error: storeError } = await supabaseClient
+      .from("stores")
+      .select("email")
+      .eq("store_number", Number(adminData.store))
+      .single();
+
+    if (storeError || !storeData) {
+      alert("매장 정보를 찾을 수 없습니다. 잠시후 로그아웃 됩니다.");
+      await supabaseClient.auth.signOut();
+      show("login", "start");
+      return;
+    }
+
+    // 3. 사용자 이메일과 매장 이메일 일치 여부 확인
+    if (storeData.email === email) {
+      window.localStorage.setItem("number", adminData.store);
+      show("start", "login");
+    } else {
+      alert(
+        "올바른 데이터가 아니거나 관리자가 아닙니다. 잠시후 로그아웃 됩니다.",
+      );
+      await supabaseClient.auth.signOut();
+      show("login", "start");
+    }
+  } catch (error) {
+    console.error("Error handling result:", error);
+    alert(`에러 발생: ${error.message}`);
+    await supabaseClient.auth.signOut();
+    show("login", "start");
+  }
 }
 
 function show(showId, hideId) {
@@ -134,3 +114,13 @@ document.getElementById("logoutTxt").addEventListener("dblclick", logout);
 document.getElementById("startBtn").addEventListener("click", () => {
   window.location.href = "main.html";
 });
+
+// 페이지 최초 진입 시 세션 체크
+(async () => {
+  const {
+    data: { session },
+  } = await supabaseClient.auth.getSession();
+  if (!session) {
+    show("login", "start");
+  }
+})();

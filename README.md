@@ -1,6 +1,6 @@
 # **TREE CONSOLE V5**
 
- [ENGLISH](./README.md) [한국어](./README-ko.md)
+[ENGLISH](./README.md) [한국어](./README-ko.md)
 
 > [!NOTE]
 > This work is licensed under [**CC BY-NC 4.0**](https://creativecommons.org/licenses/by-nc/4.0) <a href="https://creativecommons.org/licenses/by-nc/4.0/legalcode.en"><img src="https://mirrors.creativecommons.org/presskit/icons/cc.svg" width="18" alt="CC"></a> <a href="https://creativecommons.org/licenses/by-nc/4.0/legalcode.en"><img src="https://mirrors.creativecommons.org/presskit/icons/by.svg" width="18" alt="BY"></a> <a href="https://creativecommons.org/licenses/by-nc/4.0/legalcode.en"><img src="https://mirrors.creativecommons.org/presskit/icons/nc.svg" width="18" alt="NC"></a>
@@ -13,8 +13,8 @@
 
 > ## Project Language
 
-<a href="https://reactnative.dev"><img alt="react native" src="https://img.shields.io/badge/react-native-61DAFB?style=for-the-badge&logo=react"> 
-<a href="https://firebase.google.com"><img alt="firebase" src="https://img.shields.io/badge/firebase-DD2C00?style=for-the-badge&logo=firebase"> 
+<a href="https://reactnative.dev"><img alt="react native" src="https://img.shields.io/badge/react-native-61DAFB?style=for-the-badge&logo=react">
+<a href="https://firebase.google.com"><img alt="firebase" src="https://img.shields.io/badge/firebase-DD2C00?style=for-the-badge&logo=firebase">
 
 > ## Service Status
 

@@ -1,76 +1,60 @@
-const firebaseConfig = {
-  apiKey: "AIzaSyDJRpL1f7zssYZ5495icYrjga_U4jAoLAE",
-  authDomain: "treeentertainment.web.app",
-  databaseURL: "https://treeentertainment-default-rtdb.firebaseio.com",
-  projectId: "treeentertainment",
-  storageBucket: "treeentertainment.firebasestorage.app",
-  messagingSenderId: "302800551840",
-  appId: "1:302800551840:web:77c5d1af87e43cb3c3eec5",
-};
-
-const app = firebase.initializeApp(firebaseConfig);
-const database = firebase.database();
-const auth = firebase.auth();
-
-firebase.auth().onAuthStateChanged((user) => {
-  if (user) {
-    handleResult(user);
+supabaseClient.auth.onAuthStateChange((event, session) => {
+  if (session && session.user) {
+    handleResult(session.user);
   } else {
     window.localStorage.removeItem("email");
     window.localStorage.removeItem("name");
+    window.localStorage.removeItem("number");
     window.location.href = "index.html";
   }
 });
 
-function handleResult(user) {
+async function handleResult(user) {
   const email = user.email;
-  const fixedemail = email.replace(/\./g, "@");
-  window.localStorage.setItem("email", JSON.stringify(fixedemail));
+  window.localStorage.setItem("email", JSON.stringify(email));
 
-  firebase
-    .database()
-    .ref("/people/admin/" + fixedemail)
-    .once("value")
-    .then((snapshot) => {
-      const data = snapshot.val();
-      if (data && data.enabled === true) {
-        window.localStorage.setItem("number", JSON.stringify(data.store));
+  try {
+    const { data: adminData, error: adminError } = await supabaseClient
+      .from("admins")
+      .select("store")
+      .eq("user_id", user.id)
+      .single();
 
-        firebase
-          .database()
-          .ref("/people/data/" + data.store)
-          .once("value")
-          .then((snapshot) => {
-            const data = snapshot.val();
-            if (data && data.email === fixedemail) {
-              window.localStorage.setItem("name", JSON.stringify(data.name));
-            } else {
-              alert(
-                "올바른 데이터가 아니거나 관리자가 아닙니다. 잠시후 로그아웃 됩니다.",
-              );
-              firebase.auth().signOut();
-              window.location.href = "index.html";
-            }
-          })
-          .catch((error) => {
-            var errorCode = error.code;
-            var errorMessage = error.message;
-            firebase.auth().signOut();
-            alert(`에러 코드: ${errorCode} 에러 메시지: ${errorMessage}`);
-            window.location.href = "index.html";
-          });
-      } else {
-        alert("관리자가 아닙니다. 잠시후 로그아웃 됩니다.");
-        firebase.auth().signOut();
-        window.location.href = "index.html";
-      }
-    })
-    .catch((error) => {
-      var errorCode = error.code;
-      var errorMessage = error.message;
-      firebase.auth().signOut();
-
-      alert(`에러 코드: ${errorCode} 에러 메시지: ${errorMessage}`);
+    if (adminError || !adminData) {
+      alert("관리자 정보를 찾을 수 없습니다. 잠시후 로그아웃 됩니다.");
+      await supabaseClient.auth.signOut();
       window.location.href = "index.html";
-    });
+
+      return;
+    }
+
+    const { data: storeData, error: storeError } = await supabaseClient
+      .from("stores")
+      .select("email")
+      .eq("store_number", adminData.store)
+      .single();
+
+    if (storeError || !storeData) {
+      alert("매장 정보를 찾을 수 없습니다. 잠시후 로그아웃 됩니다.");
+      await supabaseClient.auth.signOut();
+      window.location.href = "index.html";
+
+      return;
+    }
+
+    if (storeData.email === email) {
+      window.localStorage.setItem("number", JSON.stringify(adminData.store));
+      window.localStorage.setItem("name", JSON.stringify(storeData.name));
+    } else {
+      alert(
+        "올바른 데이터가 아니거나 관리자가 아닙니다. 잠시후 로그아웃 됩니다.",
+      );
+      await supabaseClient.auth.signOut();
+      window.location.href = "index.html";
+    }
+  } catch (error) {
+    console.error("Error handling result:", error);
+    alert(`에러 발생: ${error.message}`);
+    await supabaseClient.auth.signOut();
+  }
 }
