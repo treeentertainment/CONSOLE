@@ -50,11 +50,11 @@
         <li class="tabs-title">
           <a href="#menu" onclick="editmenu()">메뉴 관리</a>
         </li>
-        <li class="tabs-title">
+        <!-- <li class="tabs-title">
           <a href="#inventory">재고 관리</a>
-        </li>
+        </li> -->
         <li class="tabs-title">
-          <a href="#settings">가게 설정</a>
+          <a href="#devices">기기 설정</a>
         </li>
       </ul>
 
@@ -93,15 +93,114 @@
         </div>
 
         <!-- 재고 관리 -->
-        <div class="tabs-panel" id="inventory">재고 관리 내용</div>
+        <!-- <div class="tabs-panel" id="inventory">재고 관리 내용</div> -->
 
-        <!-- 가게 설정 -->
-        <div class="tabs-panel" id="settings">가게 설정 내용</div>
+        <!-- 기기 관리 -->
+        <div class="tabs-panel" id="devices">
+          <div class="callout primary" style="margin-bottom: 1.5rem">
+            <h5>매장 배너/상태 관리</h5>
+            <form id="banner-status-form" onsubmit="return false;">
+              <div class="grid-x grid-margin-x">
+                <div class="cell small-12 medium-6">
+                  <label
+                    >배너 이미지 URL (쉼표로 구분)
+                    <input
+                      type="text"
+                      id="banner-input"
+                      placeholder="url1, url2, ..."
+                    />
+                  </label>
+                </div>
+                <div class="cell small-12 medium-3">
+                  <label
+                    >상태 이미지 URL
+                    <input
+                      type="text"
+                      id="status-img-input"
+                      placeholder="상태 이미지 URL"
+                    />
+                  </label>
+                </div>
+                <div class="cell small-12 medium-3">
+                  <label
+                    >상태 메시지
+                    <input
+                      type="text"
+                      id="status-reason-input"
+                      placeholder="상태 메시지"
+                    />
+                  </label>
+                </div>
+              </div>
+              <div class="grid-x grid-margin-x">
+                <div class="cell small-12 medium-6">
+                  <button class="button primary" id="save-banner-status">
+                    저장
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="grid-x grid-padding-x">
+            <div class="cell small-12 medium-8">
+              <table class="hover" id="device-table">
+                <thead>
+                  <tr>
+                    <th>기기명</th>
+                    <th>상태</th>
+                    <th>도구</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <div class="cell small-12 medium-4">
+              <div class="button-group stacked">
+                <button class="button" id="all-wait">전체 대기(wait)</button>
+                <button class="button" id="all-ready">전체 준비(ready)</button>
+                <button class="button" id="all-blocked">
+                  전체 차단(blocked)
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </main>
+    <!-- Device Banner/Status Modal -->
+    <div
+      class="reveal"
+      id="device-banner-status-modal"
+      data-reveal
+      data-close-on-click="false"
+    >
+      <h4>기기별 배너/상태 편집</h4>
+      <form id="device-banner-status-form" onsubmit="return false;">
+        <input type="hidden" id="modal-device-id" />
+        <label
+          >배너 이미지 URL (쉼표로 구분)
+          <input
+            type="text"
+            id="modal-device-banner-input"
+            placeholder="url1, url2, ..."
+          />
+        </label>
+        <div style="margin-top: 10px">
+          <button class="button primary" id="modal-save-device-banner-status">
+            저장
+          </button>
+          <button class="button" data-close>닫기</button>
+        </div>
+      </form>
+    </div>
 
     <!-- Foundation Reveal Modal -->
-    <div class="reveal custom-modal" id="modal" data-reveal>
+    <div
+      class="reveal custom-modal"
+      id="modal"
+      data-reveal
+      data-close-on-click="false"
+    >
       <div class="custom-modal-header">
         <h4 id="modal-title"></h4>
         <button class="close-button" data-close aria-label="Close">
@@ -127,6 +226,9 @@
     <script src="menu.js"></script>
     <script src="order.js"></script>
     <script src="fullscreen.js"></script>
+
+    <!-- Device Status Script -->
+    <script src="device.js"></script>
 
     <script>
       $(document).foundation();
