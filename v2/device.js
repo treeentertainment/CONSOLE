@@ -83,7 +83,16 @@ function loadStoreInfo() {
 }
 
 function saveStoreInfo(banners, status) {
-  const data = { banner: banners, status };
+  // 기존 값 유지, 입력된 값만 갱신
+  let prev = loadStoreInfo() || {};
+  const data = {
+    ...prev,
+    banner: banners,
+    status: {
+      ...((prev && prev.status) || {}),
+      ...status,
+    },
+  };
   localStorage.setItem("storeBannerStatus", JSON.stringify(data));
 }
 
