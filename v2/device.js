@@ -9,15 +9,25 @@ async function saveDeviceInfo(id, banners, status) {
     alert("기기 정보 조회 실패: " + error.message);
     return;
   }
+
+  // 기존 상태 유지
+  const prevStatus = device.data?.status || {};
+  const newStatus = {
+    img: status?.img || prevStatus.img || "",
+    reason: status?.reason || prevStatus.reason || "",
+  };
+
   const newData = {
     ...device.data,
     banner: banners,
-    status: status,
+    status: newStatus,
   };
+
   const { error: updateError } = await supabaseClient
     .from("devices")
     .update({ data: newData })
     .eq("id", id);
+
   if (updateError) {
     alert("기기 배너/상태 저장 실패: " + updateError.message);
   }
@@ -89,7 +99,8 @@ function saveStoreInfo(banners, status) {
   // status가 undefined이거나, img/reason 모두 빈 값이면 기존 값 유지
   if (
     !status ||
-    ((status.img === undefined || status.img === "") && (status.reason === undefined || status.reason === ""))
+    ((status.img === undefined || status.img === "") &&
+      (status.reason === undefined || status.reason === ""))
   ) {
     newStatus = prev.status || {};
   } else {
@@ -105,19 +116,6 @@ function saveStoreInfo(banners, status) {
   };
   localStorage.setItem("storeBannerStatus", JSON.stringify(data));
 }
-
-// 사용 예시:
-// setStoreBannerStatus([
-//   "https://ik.imagekit.io/treeentertainment/logo/logo500.png",
-//   "https://ik.imagekit.io/treeentertainment/logo/logo500.png"
-// ], {
-//   img: "https://ik.imagekit.io/treeentertainment/logo/logo500.png",
-//   reason: "매장 준비중입니다"
-// });
-// const info = getStoreBannerStatus();
-// device.js
-// Supabase 연동: 기기별 상태 변경, 일괄 적용, blocked 시 reason/image 변경
-
 // devices 목록 불러오기
 async function getDevices(storeNum) {
   $("#device-table tbody").html(
@@ -151,7 +149,10 @@ async function updateDeviceStatus(id, status, reason = "", image = "", cb) {
     return;
   }
   let newData = { ...device.data };
-  newData.status = { img: image, reason: reason };
+  newData.status = {
+    img: image || device.data?.status?.img || "",
+    reason: reason || device.data?.status?.reason || "",
+  };
   // reason/image 최상위 키가 있으면 제거
   if (newData.hasOwnProperty("reason")) delete newData.reason;
   if (newData.hasOwnProperty("image")) delete newData.image;
