@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <title>Auth Callback</title>
+  </head>
+  <body>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-client.js"></script>
+
+    <script>
+      const channel = new BroadcastChannel("supabase-auth");
+
+      (async () => {
+        // OAuth 토큰 → Supabase 세션 저장
+        await supabaseClient.auth.getSession();
+
+        // 부모창에 로그인 완료 알림
+        channel.postMessage("SIGNED_IN");
+
+        // 팝업 종료
+        window.close();
+      })();
+    </script>
+  </body>
+</html>

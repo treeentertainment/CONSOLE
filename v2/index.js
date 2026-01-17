@@ -1,17 +1,25 @@
+const authChannel = new BroadcastChannel("supabase-auth");
+
 document
   .getElementById("googleLoginBtn")
   .addEventListener("click", googleLogin);
 
 async function googleLogin() {
-  const { error } = await supabaseClient.auth.signInWithOAuth({
+  const { data, error } = await supabaseClient.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo: `${window.location.origin}/v2/index.html`,
+      prompt: "select_account",
+      redirectTo: `${window.location.origin}/callback.html`,
+      skipBrowserRedirect: true,
     },
   });
+
   if (error) {
-    console.error("Error logging in with Google:", error);
+    console.error(error);
+    return;
   }
+
+  window.open(data.url, "google-oauth", "width=500,height=600");
 }
 
 const form = document.getElementById("loginForm");
