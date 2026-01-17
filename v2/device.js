@@ -85,13 +85,23 @@ function loadStoreInfo() {
 function saveStoreInfo(banners, status) {
   // 기존 값 유지, 입력된 값만 갱신
   let prev = loadStoreInfo() || {};
+  let newStatus;
+  // status가 undefined이거나, img/reason 모두 빈 값이면 기존 값 유지
+  if (
+    !status ||
+    ((status.img === undefined || status.img === "") && (status.reason === undefined || status.reason === ""))
+  ) {
+    newStatus = prev.status || {};
+  } else {
+    newStatus = {
+      ...((prev && prev.status) || {}),
+      ...status,
+    };
+  }
   const data = {
     ...prev,
     banner: banners,
-    status: {
-      ...((prev && prev.status) || {}),
-      ...status,
-    },
+    status: newStatus,
   };
   localStorage.setItem("storeBannerStatus", JSON.stringify(data));
 }
