@@ -1,0 +1,41 @@
+#tabs {
+  width: 90%;
+  margin: 0 auto;
+}
+
+.tabs {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.tabs-title {
+  float: none;
+}
+
+.tabs-content {
+  width: 90%;
+  height: 100%;
+  margin: 0 auto;
+}
+
+.menupan-img {
+  width: 200px;
+  height: 200px; 
+  object-fit: cover;  
+}
+
+#modal-title {
+  font-weight: bold;
+}
+
+.custom-modal-body {
+  justify-content: center;
+}
+
+.custom-modal-footer {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}

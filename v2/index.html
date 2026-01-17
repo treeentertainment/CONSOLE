@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <!-- Compressed CSS -->
+    <link rel="stylesheet" href="index.css" />
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/foundation-sites@6.9.0/dist/css/foundation.min.css"
+      crossorigin="anonymous"
+    />
+
+    <!-- Compressed JavaScript -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/foundation-sites@6.9.0/dist/js/foundation.min.js"
+      crossorigin="anonymous"
+    ></script>
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+    />
+    <title>TREE CONSOLE V2 | LOGIN</title>
+  </head>
+  <body>
+    <br />
+    <p class="h3 text-center" id="logoutTxt">
+      <strong>TREE CONSOLE V2</strong>
+    </p>
+
+    <main class="container" id="login" style="display: none">
+      <br />
+      <div class="text-center">
+        <button class="button" id="googleLoginBtn">
+          <i class="fa-brands fa-google"></i> 구글 로그인
+        </button>
+      </div>
+      <hr style="width: 40%" />
+      <form id="loginForm">
+        <div class="grid-container">
+          <div class="grid-y">
+            <div class="cell">
+              <label
+                >이메일
+                <input type="email" placeholder="이메일 입력" />
+              </label>
+            </div>
+            <div class="cell">
+              <label
+                >비밀번호
+                <input type="password" placeholder="비밀번호 입력" />
+              </label>
+            </div>
+            <div class="cell">
+              <center>
+                <input
+                  class="submit hollow button"
+                  type="submit"
+                  value="로그인"
+                />
+              </center>
+            </div>
+          </div>
+        </div>
+      </form>
+    </main>
+    <main class="container" id="start" style="display: none">
+      <div class="grid-container">
+        <div class="grid-y">
+          <div class="cell">
+            <br />
+            <center>
+              <button class="success button" id="startBtn">시작하기</button>
+            </center>
+          </div>
+        </div>
+      </div>
+    </main>
+    <script src="https://www.gstatic.com/firebasejs/12.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.7.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.7.0/firebase-database-compat.js"></script>
+    <script>
+      $(document).foundation();
+    </script>
+    <script src="index.js"></script>
+    <script src="fullscreen.js"></script>
+  </body>
+</html>

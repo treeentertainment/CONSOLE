@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html class="no-js" lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="main.css" />
+
+    <!-- jQuery -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+
+    <!-- Foundation CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/foundation-sites@6.9.0/dist/css/foundation.min.css"
+      crossorigin="anonymous"
+    />
+
+    <!-- Foundation JS -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/foundation-sites@6.9.0/dist/js/foundation.min.js"
+      crossorigin="anonymous"
+    ></script>
+
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+    />
+
+    <title>TREE CONSOLE V2 | MAIN</title>
+  </head>
+
+  <body>
+    <br />
+
+    <p class="h3 text-center" id="logoutTxt">
+      <strong>TREE CONSOLE V2</strong>
+    </p>
+
+    <!-- Foundation Container -->
+    <main class="grid-container" id="login">
+      <!-- Tabs -->
+      <ul class="tabs" data-tabs id="tabs">
+        <li class="tabs-title is-active">
+          <a href="#order" aria-selected="true">주문 관리</a>
+        </li>
+        <li class="tabs-title">
+          <a href="#menu" onclick="editmenu()">메뉴 관리</a>
+        </li>
+        <li class="tabs-title">
+          <a href="#inventory">재고 관리</a>
+        </li>
+        <li class="tabs-title">
+          <a href="#settings">가게 설정</a>
+        </li>
+      </ul>
+
+      <!-- Tabs Content -->
+      <div class="tabs-content" data-tabs-content="tabs">
+        <!-- 주문 관리 -->
+        <div class="tabs-panel is-active" id="order">
+          <table class="hover">
+            <thead>
+              <tr>
+                <th>번호</th>
+                <th>주문 내용</th>
+                <th>전화번호</th>
+                <th>도구</th>
+              </tr>
+            </thead>
+            <tbody id="order-table"></tbody>
+          </table>
+        </div>
+
+        <!-- 메뉴 관리 -->
+        <div class="tabs-panel" id="menu">
+          <table class="hover" id="menupan">
+            <thead>
+              <tr>
+                <th>이미지</th>
+                <th>이름</th>
+                <th>가격</th>
+                <th>최대 주문수</th>
+                <th>상태</th>
+                <th>도구</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <!-- 재고 관리 -->
+        <div class="tabs-panel" id="inventory">
+          재고 관리 내용
+        </div>
+
+        <!-- 가게 설정 -->
+        <div class="tabs-panel" id="settings">
+          가게 설정 내용
+        </div>
+      </div>
+    </main>
+
+    <!-- Foundation Reveal Modal -->
+    <div class="reveal custom-modal" id="modal" data-reveal>
+      <div class="custom-modal-header">
+        <h4 id="modal-title"></h4>
+        <button class="close-button" data-close aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="custom-modal-body" id="modal-content"></div>
+
+      <div class="custom-modal-footer">
+        <button class="button primary" id="okmodal">확인 & 적용</button>
+        <button class="button secondary" data-close>취소</button>
+      </div>
+    </div>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/12.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.7.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.7.0/firebase-database-compat.js"></script>
+
+    <!-- App Scripts -->
+    <script src="main.js"></script>
+    <script src="auth.js"></script>
+    <script src="handler.js"></script>
+    <script src="menu.js"></script>
+    <script src="order.js"></script>
+    <script src="fullscreen.js"></script>
+
+    <script>
+      $(document).foundation();
+    </script>
+  </body>
+</html>
