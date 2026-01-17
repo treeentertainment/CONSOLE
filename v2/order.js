@@ -23,34 +23,34 @@ function neworder(key, orderData) {
 
   editor.appendChild(
     createIconButton(["secondary", "button", "hollow"], "fa-solid fa-pen", () =>
-      edit(templist, key)
-    )
+      edit(templist, key),
+    ),
   );
 
   editor.appendChild(
     createIconButton(["success", "button", "hollow"], "fa-solid fa-phone", () =>
-      readymenu(key, phonenumber)
-    )
+      readymenu(key, phonenumber),
+    ),
   );
 
   editor.appendChild(
     createIconButton(["alert", "button", "hollow"], "fa-solid fa-trash", () =>
-      deletemenu(key, phonenumber)
-    )
+      deletemenu(key, phonenumber),
+    ),
   );
 
   editor.appendChild(
     createIconButton(
       ["warning", "button", "hollow"],
       "fa-solid fa-rotate-left",
-      () => areyoureturn(key, phonenumber)
-    )
+      () => areyoureturn(key, phonenumber),
+    ),
   );
 
   editor.appendChild(
     createIconButton(["alert", "button", "hollow"], "fa-solid fa-check", () =>
-      applycontent(key, "finished")
-    )
+      applycontent(key, "finished"),
+    ),
   );
 
   editor.appendChild(
@@ -58,8 +58,8 @@ function neworder(key, orderData) {
       ["secondary", "button", "hollow"],
       "fa-regular fa-credit-card",
       () =>
-        paycontent(orderData.totalPrice, orderData.totalPaid, key, phonenumber)
-    )
+        paycontent(orderData.totalPrice, orderData.totalPaid, key, phonenumber),
+    ),
   );
 
   tr.appendChild(editor);
@@ -138,7 +138,7 @@ function edit(templist, key) {
       const updates = {};
       templist.forEach((item, idx) => {
         const newQuantity = Number(
-          document.getElementById(`key-${key}-item-${idx}`).value
+          document.getElementById(`key-${key}-item-${idx}`).value,
         );
         updates[`people/data/${number}/order/${key}/menu/${idx}/quantity`] =
           newQuantity;
@@ -148,7 +148,7 @@ function edit(templist, key) {
       editor.innerHTML = "";
       $("#modal").foundation("close");
     },
-    { once: true }
+    { once: true },
   );
 
   $("#modal").foundation("open");
@@ -186,9 +186,8 @@ function deletemenu(key, phonenumber) {
 
 function readymenu(key, phonenumber) {
   document.getElementById("modal-content").innerHTML = "";
-  document.getElementById(
-    "modal-title"
-  ).textContent = `${phonenumber} 을 콜 하시겠습니까?`;
+  document.getElementById("modal-title").textContent =
+    `${phonenumber} 을 콜 하시겠습니까?`;
   document.getElementById("okmodal").addEventListener(
     "click",
     function handler() {
@@ -196,7 +195,7 @@ function readymenu(key, phonenumber) {
       document.getElementById("modal-title").textContent = "";
       $("#modal").foundation("close");
     },
-    { once: true }
+    { once: true },
   );
 
   $("#modal").foundation("open");
@@ -204,9 +203,8 @@ function readymenu(key, phonenumber) {
 
 function areyoureturn(key, phonenumber) {
   document.getElementById("modal-content").innerHTML = "";
-  document.getElementById(
-    "modal-title"
-  ).textContent = `${phonenumber} 을 준비중으로 바꾸시겠습니까?`;
+  document.getElementById("modal-title").textContent =
+    `${phonenumber} 을 준비중으로 바꾸시겠습니까?`;
 
   document.getElementById("okmodal").addEventListener(
     "click",
@@ -215,7 +213,7 @@ function areyoureturn(key, phonenumber) {
       document.getElementById("modal-title").textContent = "";
       $("#modal").foundation("close");
     },
-    { once: true }
+    { once: true },
   );
 
   $("#modal").foundation("open");
@@ -326,14 +324,14 @@ function paycontent(total, paid, key, phonenumber) {
           result.snapshot.val().totalPrice,
           result.snapshot.val().totalPaid,
           key,
-          phonenumber
+          phonenumber,
         );
       } catch (error) {
         console.error("결제 오류:", error);
         alert("결제 중 오류가 발생했습니다.");
       }
     },
-    { once: true }
+    { once: true },
   );
 
   document.getElementById("okmodal").addEventListener(
@@ -341,7 +339,7 @@ function paycontent(total, paid, key, phonenumber) {
     () => {
       $("#modal").foundation("close");
     },
-    { once: true }
+    { once: true },
   );
 
   $("#modal").foundation("open");
@@ -386,13 +384,13 @@ function renderOrderMenu(tdContent, orderData, menuData, templist) {
       if (!categoryName) return;
 
       const menuItem = menuData.menu?.[categoryName].find(
-        (m) => m && m.key === currentItem.id
+        (m) => m && m.key === currentItem.id,
       );
 
       currentItem.options.forEach((option, i) => {
         const unit = menuItem?.option?.[i]?.unit ?? "";
         tdContent.appendChild(
-          createContentDiv(`${option.name} - ${option.choice}${unit}`)
+          createContentDiv(`${option.name} - ${option.choice}${unit}`),
         );
       });
     }

@@ -93,7 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
         </g>
       </svg>
     </button>
-    `
+    `,
   );
 
   const toggleBtn = document.querySelector(".js-toggle-fullscreen-btn");

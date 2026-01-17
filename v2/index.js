@@ -5,7 +5,7 @@ const firebaseConfig = {
   projectId: "treeentertainment",
   storageBucket: "treeentertainment.firebasestorage.app",
   messagingSenderId: "302800551840",
-  appId: "1:302800551840:web:77c5d1af87e43cb3c3eec5"
+  appId: "1:302800551840:web:77c5d1af87e43cb3c3eec5",
 };
 
 const app = firebase.initializeApp(firebaseConfig);
@@ -95,7 +95,7 @@ function handleResult(user) {
               show("start", "login");
             } else {
               alert(
-                "올바른 데이터가 아니거나 관리자가 아닙니다. 잠시후 로그아웃 됩니다."
+                "올바른 데이터가 아니거나 관리자가 아닙니다. 잠시후 로그아웃 됩니다.",
               );
               firebase.auth().signOut();
               show("login", "start");

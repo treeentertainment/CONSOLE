@@ -1,18 +1,18 @@
-@import url('https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap");
 
-html, body {
-    background-color: white;
-    font-family: "Do Hyeon", sans-serif;
-    font-weight: 400;
-    font-style: normal;
+html,
+body {
+  background-color: white;
+  font-family: "Do Hyeon", sans-serif;
+  font-weight: 400;
+  font-style: normal;
 }
-
 
 /* 스크롤바 숨기기 */
 /* html, body {
     -ms-overflow-style: none;  /* IE and Edge */
- /*   scrollbar-width: none;  /* Firefox */
- /*   } 
+/*   scrollbar-width: none;  /* Firefox */
+/*   } 
 body:not(#menupan)::-webkit-scrollbar {
     display: none;
 } */
@@ -25,9 +25,8 @@ body:not(#menupan)::-webkit-scrollbar {
   display: none;
 }
 
-
 .menupan-img {
   width: 200px;
-  height: 200px; 
-  object-fit: cover;  
+  height: 200px;
+  object-fit: cover;
 }

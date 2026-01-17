@@ -122,6 +122,6 @@ function deletecheck(name, category, type, index) {
           alertbox.innerHTML = `오류 발생, 관리자에게 다음 메시지를 전달해주십시오: ${error}`;
         });
     },
-    { once: true }
+    { once: true },
   );
 }

@@ -3,7 +3,7 @@ function getMenuData() {
     const raw = localStorage.getItem("menus");
     return raw ? JSON.parse(raw) : null;
   } catch (e) {
-    handleError(e)
+    handleError(e);
   }
 }
 
