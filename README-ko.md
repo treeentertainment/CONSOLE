@@ -15,10 +15,9 @@
 <a href="https://github.com/CSS-Next"><img alt="css" src="https://img.shields.io/badge/css-663399?style=for-the-badge&logo=css&logoColor=white"></a>
 <a href="https://supabase.com"><img alt="firebase" src="https://img.shields.io/badge/supabase-3FCF8E?style=for-the-badge&logo=supabase&logoColor=white">
 
-> ## 서비스 상태
-
-[![status](https://img.shields.io/github/actions/workflow/status/treeentertainment/CONSOLE/deploy.yml?style=for-the-badge)](../../actions/workflows/deploy.yml)
-
 > ## 저작권
 
 [![treeentertainment](https://img.shields.io/badge/tree%20entertainment-green?style=for-the-badge&logo=github&label=github)](../../..)
+
+> ## 라이선스
+[![AGPL-3.0](https://www.gnu.org/graphics/agplv3-with-text-162x68.png)](https://www.gnu.org/licenses/agpl-3.0.html)
