@@ -1,12 +1,6 @@
 # **TREE CONSOLE V2**
 
-[ENGLISH](./README.md) [한국어](./README-ko.md)
-
-> [!NOTE]
-> 이 저작물은 [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/deed.ko) 라이선스에 따라 제공됩니다.
-> <a href="https://creativecommons.org/licenses/by-nc/4.0/legalcode.ko"><img src="https://mirrors.creativecommons.org/presskit/icons/cc.svg" width="18" alt="CC"></a>
-> <a href="https://creativecommons.org/licenses/by-nc/4.0/legalcode.ko"><img src="https://mirrors.creativecommons.org/presskit/icons/by.svg" width="18" alt="BY"></a>
-> <a href="https://creativecommons.org/licenses/by-nc/4.0/legalcode.ko"><img src="https://mirrors.creativecommons.org/presskit/icons/nc.svg" width="18" alt="NC"></a>
+[🇺🇸ENGLISH](./README.md) [🇰🇷한국어](./README-ko.md)
 
 ---
 
@@ -19,7 +13,7 @@
 <a href="https://wikipedia.org/wiki/html5"><img alt="html5" src="https://img.shields.io/badge/html5-E34F26?style=for-the-badge&logo=html5&logoColor=white"></a>
 <a href="https://wikipedia.org/wiki/JavaScript"><img alt="javascript" src="https://img.shields.io/badge/javascript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=white"></a>
 <a href="https://github.com/CSS-Next"><img alt="css" src="https://img.shields.io/badge/css-663399?style=for-the-badge&logo=css&logoColor=white"></a>
-<a href="https://firebase.google.com"><img alt="firebase" src="https://img.shields.io/badge/firebase-DD2C00?style=for-the-badge&logo=firebase"></a>
+<a href="https://supabase.com"><img alt="firebase" src="https://img.shields.io/badge/supabase-3FCF8E?style=for-the-badge&logo=supabase&logoColor=white">
 
 > ## 서비스 상태
 
