@@ -18,3 +18,7 @@
 > ## CopyRight
 
 [![treeentertainment](https://img.shields.io/badge/tree%20entertainment-green?style=for-the-badge&logo=github&label=github)](../../..)
+
+> ## License
+
+[![AGPL-3.0](https://www.gnu.org/graphics/agplv3-with-text-162x68.png)](https://www.gnu.org/licenses/agpl-3.0.html)
