@@ -15,10 +15,6 @@
 <a href="https://github.com/CSS-Next"><img alt="css" src="https://img.shields.io/badge/css-663399?style=for-the-badge&logo=css&logoColor=white"></a>
 <a href="https://supabase.com"><img alt="firebase" src="https://img.shields.io/badge/supabase-3FCF8E?style=for-the-badge&logo=supabase&logoColor=white">
 
-> ## Service Status
-
-[![status](https://img.shields.io/github/actions/workflow/status/treeentertainment/CONSOLE/deploy.yml?style=for-the-badge)](../../actions/workflows/deploy.yml)
-
 > ## CopyRight
 
 [![treeentertainment](https://img.shields.io/badge/tree%20entertainment-green?style=for-the-badge&logo=github&label=github)](../../..)
