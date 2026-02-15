@@ -33,6 +33,63 @@ async function saveDeviceInfo(id, banners, status) {
   }
 }
 
+// ---------------------
+// Banner URL List UI helpers
+// ---------------------
+function normalizeUrlList(input) {
+  if (!input) return [];
+  if (Array.isArray(input)) return input.map((s) => String(s).trim()).filter(Boolean);
+  if (typeof input === "string") {
+    return input
+      .split(",")
+      .map((s) => (s ? s.trim() : ""))
+      .filter(Boolean);
+  }
+  return [];
+}
+
+function readUrlList($container) {
+  return $container
+    .find("input.banner-url")
+    .map(function () {
+      return ($(this).val() || "").trim();
+    })
+    .get()
+    .filter(Boolean);
+}
+
+function setHiddenCommaValue($hiddenInput, urls) {
+  $hiddenInput.val((urls || []).join(", "));
+}
+
+function appendUrlRow($container, value = "") {
+  const safeValue = value == null ? "" : String(value);
+  const $row = $(
+    `
+    <div class="grid-x grid-margin-x align-middle banner-url-row" style="margin-bottom: 0.5rem">
+      <div class="cell auto">
+        <input type="text" class="banner-url" placeholder="https://..." value="" />
+      </div>
+      <div class="cell shrink">
+        <button type="button" class="button alert tiny remove-banner-url">삭제</button>
+      </div>
+    </div>
+    `,
+  );
+  $row.find("input.banner-url").val(safeValue);
+  $container.append($row);
+}
+
+function renderUrlList($container, urls) {
+  const list = normalizeUrlList(urls);
+  $container.empty();
+  if (!list.length) {
+    appendUrlRow($container, "");
+    return;
+  }
+  list.forEach((u) => appendUrlRow($container, u));
+}
+
 // 기기별 배너/상태 불러오기
 async function loadDeviceInfo(id) {
   const { data: device, error } = await supabaseClient
@@ -71,11 +128,9 @@ async function saveStoreInfoToDatabase(storeNum, banners, status) {
 $(document)
   .off("click", "#save-banner-status")
   .on("click", "#save-banner-status", async function () {
-    const banners = $("#banner-input")
-      .val()
-      .split(",")
-      .map((s) => s.trim())
-      .filter(Boolean);
+    const $bannerList = $("#banner-list");
+    const banners = readUrlList($bannerList);
+    setHiddenCommaValue($("#banner-input"), banners);
     const img = $("#status-img-input").val().trim();
     const reason = $("#status-reason-input").val().trim();
     
@@ -302,6 +357,7 @@ async function drawDeviceTable() {
       const $tr = $(this).closest("tr");
       const id = $tr.data("id");
       $("#modal-device-id").val(id);
+      renderUrlList($("#modal-device-banner-list"), []);
       $("#modal-device-banner-input").val("");
       $("#modal-device-status-img-input").val("");
       $("#modal-device-status-reason-input").val("");
@@ -309,8 +365,13 @@ async function drawDeviceTable() {
         .prop("disabled", true)
         .text("불러오는 중...");
       const info = await loadDeviceInfo(id);
-      $("#modal-device-banner-input").val(
-        info && info.banner ? info.banner.join(", ") : "",
+      renderUrlList(
+        $("#modal-device-banner-list"),
+        info && info.banner ? info.banner : [],
+      );
+      setHiddenCommaValue(
+        $("#modal-device-banner-input"),
+        info && info.banner ? info.banner : [],
       );
       $("#modal-device-status-img-input").val(
         info && info.status?.img ? info.status.img : "",
@@ -328,11 +389,8 @@ async function drawDeviceTable() {
     .off("click", "#modal-save-device-banner-status")
     .on("click", "#modal-save-device-banner-status", async function () {
       const id = $("#modal-device-id").val();
-      const bannersRaw = $("#modal-device-banner-input").val() || "";
-      const banners = bannersRaw
-        .split(",")
-        .map((s) => (s ? s.trim() : ""))
-        .filter(Boolean);
+      const banners = readUrlList($("#modal-device-banner-list"));
+      setHiddenCommaValue($("#modal-device-banner-input"), banners);
       const img = ($("#modal-device-status-img-input").val() || "").trim();
       const reason = (
         $("#modal-device-status-reason-input").val() || ""
@@ -456,6 +514,7 @@ async function autoUpdateStoreInfo() {
     .eq("store_number", number)
     .single();
   if (error || !data) {
+    renderUrlList($("#banner-list"), []);
     $("#banner-input").val("");
     $("#status-img-input").val("");
     $("#status-reason-input").val("");
@@ -478,10 +537,34 @@ async function autoUpdateStoreInfo() {
     }
   }
   saveStoreInfo(banners, status);
-  $("#banner-input").val(Array.isArray(banners) ? banners.join(", ") : "");
+  renderUrlList($("#banner-list"), banners);
+  setHiddenCommaValue($("#banner-input"), normalizeUrlList(banners));
   $("#status-img-input").val(status?.img || "");
   $("#status-reason-input").val(status?.reason || "");
 }
+
+// Banner URL list UI events
+$(document)
+  .off("click", "#banner-add")
+  .on("click", "#banner-add", function () {
+    appendUrlRow($("#banner-list"), "");
+  });
+
+$(document)
+  .off("click", "#modal-device-banner-add")
+  .on("click", "#modal-device-banner-add", function () {
+    appendUrlRow($("#modal-device-banner-list"), "");
+  });
+
+$(document)
+  .off("click", ".remove-banner-url")
+  .on("click", ".remove-banner-url", function () {
+    const $list = $(this).closest("#banner-list, #modal-device-banner-list");
+    $(this).closest(".banner-url-row").remove();
+    if ($list.length && $list.find("input.banner-url").length === 0) {
+      appendUrlRow($list, "");
+    }
+  });
 
 // ✅ realtime 구독을 위한 변수 추가
 let deviceRealtimeSub = null;

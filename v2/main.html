@@ -102,14 +102,17 @@
             <form id="banner-status-form" onsubmit="return false;">
               <div class="grid-x grid-margin-x">
                 <div class="cell small-12 medium-6">
-                  <label
-                    >배너 이미지 URL (쉼표로 구분)
-                    <input
-                      type="text"
-                      id="banner-input"
-                      placeholder="url1, url2, ..."
-                    />
-                  </label>
+                  <label>배너 이미지 URL</label>
+                  <div id="banner-list"></div>
+                  <button
+                    type="button"
+                    class="button tiny secondary"
+                    id="banner-add"
+                    style="margin-top: 0.5rem"
+                  >
+                    URL 추가
+                  </button>
+                  <input type="hidden" id="banner-input" />
                 </div>
                 <div class="cell small-12 medium-3">
                   <label
@@ -177,14 +180,17 @@
       <h4>기기별 배너/상태 편집</h4>
       <form id="device-banner-status-form" onsubmit="return false;">
         <input type="hidden" id="modal-device-id" />
-        <label
-          >배너 이미지 URL (쉼표로 구분)
-          <input
-            type="text"
-            id="modal-device-banner-input"
-            placeholder="url1, url2, ..."
-          />
-        </label>
+        <label>배너 이미지 URL</label>
+        <div id="modal-device-banner-list"></div>
+        <button
+          type="button"
+          class="button tiny secondary"
+          id="modal-device-banner-add"
+          style="margin-top: 0.5rem"
+        >
+          URL 추가
+        </button>
+        <input type="hidden" id="modal-device-banner-input" />
         <div style="margin-top: 10px">
           <button class="button primary" id="modal-save-device-banner-status">
             저장
