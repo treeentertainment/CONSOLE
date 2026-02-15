@@ -48,11 +48,29 @@ async function loadDeviceInfo(id) {
     ? { banner: device.data.banner, status: device.data.status }
     : null;
 }
+
+// ✅ 데이터베이스에 매장 배너/상태 저장하는 기능 추가
+async function saveStoreInfoToDatabase(storeNum, banners, status) {
+  const { error } = await supabaseClient
+    .from("stores")
+    .update({
+      default_banners: banners,
+      default_status: status
+    })
+    .eq("store_number", storeNum);
+  
+  if (error) {
+    alert("⚠️ 매장 배너/상태 저장 실패: " + error.message);
+    return false;
+  }
+  return true;
+}
+
 // 매장 배너/상태 관리 UI 이벤트(main.html 연동)
-// Prevent duplicate event bindings
+// ✅ async 함수로 변경하고 데이터베이스 저장 추가
 $(document)
   .off("click", "#save-banner-status")
-  .on("click", "#save-banner-status", function () {
+  .on("click", "#save-banner-status", async function () {
     const banners = $("#banner-input")
       .val()
       .split(",")
@@ -60,8 +78,24 @@ $(document)
       .filter(Boolean);
     const img = $("#status-img-input").val().trim();
     const reason = $("#status-reason-input").val().trim();
-    saveStoreInfo(banners, { img, reason });
-    alert("✅ 매장 배너/상태가 저장되었습니다!");
+    
+    const status = { img, reason };
+    
+    // 버튼 비활성화
+    $(this).prop("disabled", true).text("저장 중...");
+    
+    // localStorage 저장
+    saveStoreInfo(banners, status);
+    
+    // 데이터베이스에도 저장
+    const success = await saveStoreInfoToDatabase(number, banners, status);
+    
+    // 버튼 활성화
+    $(this).prop("disabled", false).text("저장");
+    
+    if (success) {
+      alert("✅ 매장 배너/상태가 저장되었습니다!");
+    }
   });
 
 // (load-banner-status 버튼 및 이벤트 완전 제거됨)
@@ -116,6 +150,7 @@ function saveStoreInfo(banners, status) {
   };
   localStorage.setItem("storeBannerStatus", JSON.stringify(data));
 }
+
 // devices 목록 불러오기
 async function getDevices(storeNum) {
   $("#device-table tbody").html(
@@ -224,7 +259,7 @@ async function drawDeviceTable() {
     let createdAt = d.created_at;
     if (createdAt) {
       const dt = new Date(createdAt);
-      createdAt = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}-${String(dt.getDate()).padStart(2, "0")} ${String(dt.getHours()).padStart(2, "0")}:${String(dt.getMinutes()).padStart(2, "0")}:${String(dt.getSeconds()).padStart(2, "0")}`;
+      createdAt = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}-${String(dt.getDate()).padStart(2, "0")} ${String(dt.getHours()).padStart(2, "0")}:${String(dt.getMinutes()).padStart(2, "0")}`;
     } else {
       createdAt = "";
     }
@@ -448,19 +483,30 @@ async function autoUpdateStoreInfo() {
   $("#status-reason-input").val(status?.reason || "");
 }
 
-// #devices 탭 진입 시 자동 업데이트 및 테이블 렌더링 + realtime 구독 시작
+// ✅ realtime 구독을 위한 변수 추가
 let deviceRealtimeSub = null;
+let storeRealtimeSub = null;
+
+// #devices 탭 진입 시 자동 업데이트 및 테이블 렌더링 + realtime 구독 시작
 $(document)
   .off("click", 'a[href="#devices"]')
   .on("click", 'a[href="#devices"]', async function () {
     await autoUpdateStoreInfo();
     drawDeviceTable();
-    // 기존 구독 해제
+    
+    // 기존 devices 구독 해제
     if (deviceRealtimeSub) {
       supabaseClient.removeChannel(deviceRealtimeSub);
       deviceRealtimeSub = null;
     }
-    // realtime 구독 시작 (store_number별)
+    
+    // ✅ 기존 stores 구독 해제
+    if (storeRealtimeSub) {
+      supabaseClient.removeChannel(storeRealtimeSub);
+      storeRealtimeSub = null;
+    }
+    
+    // devices realtime 구독 시작 (store_number별)
     deviceRealtimeSub = supabaseClient
       .channel("devices-changes-" + number)
       .on(
@@ -474,6 +520,26 @@ $(document)
         (payload) => {
           // 변경 발생 시 테이블 자동 갱신
           drawDeviceTable();
+        },
+      )
+      .subscribe();
+    
+    // ✅ stores 테이블 realtime 구독 추가
+    storeRealtimeSub = supabaseClient
+      .channel("stores-changes-" + number)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "stores",
+          filter: "store_number=eq." + number,
+        },
+        async (payload) => {
+          // default_banners 또는 default_status 변경 시 자동 업데이트
+          console.log("✅ 매장 정보 업데이트 감지:", payload);
+          await autoUpdateStoreInfo();
+          alert("✅ 매장 기본 배너/상태가 실시간으로 업데이트되었습니다!");
         },
       )
       .subscribe();
